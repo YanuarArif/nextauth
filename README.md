@@ -1,36 +1,143 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Secure Authentication System
 
-## Getting Started
+A robust authentication system built with Next.js, Prisma, and Neon PostgreSQL, featuring email verification, password reset, and rate limiting.
 
-First, run the development server:
+## Features
+
+- 🔐 Secure user authentication
+- ✉️ Email verification
+- 🔑 Password reset functionality
+- 🛡️ Rate limiting protection
+- 🔒 Secure password hashing with bcrypt
+- 🎫 JWT-based session management
+- 📝 Input validation using Zod
+- 🚦 Rate limiting for security
+- 🗃️ PostgreSQL database with Prisma ORM
+
+## Setup
+
+1. Install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Set up environment variables:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cp .env.example .env
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Edit `.env` with your configuration:
 
-## Learn More
+- Get a PostgreSQL database URL from [Neon](https://neon.tech)
+- Get an API key from [Resend](https://resend.com) for email services
+- Generate a secure JWT secret
+- Set your application URL
 
-To learn more about Next.js, take a look at the following resources:
+3. Initialize the database:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+bunx prisma db push
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## API Endpoints
 
-## Deploy on Vercel
+### POST /api/auth/register
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Register a new user
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```typescript
+{
+  "email": "user@example.com",
+  "password": "securepassword",
+  "name": "John Doe"
+}
+```
+
+### POST /api/auth/login
+
+Login with credentials
+
+```typescript
+{
+  "email": "user@example.com",
+  "password": "securepassword"
+}
+```
+
+### POST /api/auth/verify
+
+Verify email address
+
+```typescript
+{
+  "token": "verification-token"
+}
+```
+
+### POST /api/auth/forgot-password
+
+Request password reset
+
+```typescript
+{
+  "email": "user@example.com"
+}
+```
+
+### POST /api/auth/reset-password
+
+Reset password with token
+
+```typescript
+{
+  "token": "reset-token",
+  "password": "newpassword"
+}
+```
+
+## Security Features
+
+- **Password Hashing**: Uses bcrypt for secure password storage
+- **Rate Limiting**: Prevents brute force attacks
+- **JWT Tokens**: Secure session management
+- **HTTP-Only Cookies**: Prevents XSS attacks
+- **Input Validation**: Prevents injection attacks
+- **Security Headers**: Protection against common web vulnerabilities
+- **Email Verification**: Prevents fake email registrations
+
+## Rate Limits
+
+- Login: 5 attempts per minute
+- Register: 3 attempts per hour
+- Forgot Password: 3 attempts per hour
+- Reset Password: 3 attempts per hour
+- Email Verification: 5 attempts per 5 minutes
+
+## Environment Variables
+
+```plaintext
+DATABASE_URL=           # Neon PostgreSQL connection URL
+JWT_SECRET=            # Secret key for JWT signing
+RESEND_API_KEY=        # Resend API key for emails
+NEXT_PUBLIC_APP_URL=   # Your application URL
+NODE_ENV=              # development/production
+```
+
+## Database Schema
+
+```prisma
+model User {
+  id                String    @id @default(uuid())
+  email             String    @unique
+  password          String
+  name              String?
+  emailVerified     DateTime?
+  verificationToken String?   @unique
+  resetToken        String?   @unique
+  resetTokenExpires DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+```
