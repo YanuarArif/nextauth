@@ -1,16 +1,40 @@
+"use client";
+
 import { FaExclamationTriangle } from "react-icons/fa";
+import { useEffect, useState } from "react";
 
 interface ErrorMessageProps {
   error?: string;
+  onClose: () => void;
+  duration?: number;
 }
 
-export const ErrorMessage = ({ error }: ErrorMessageProps) => {
-  if (!error) return null;
+export const ErrorMessage = ({
+  error,
+  onClose,
+  duration = 5000,
+}: ErrorMessageProps) => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (error) {
+      setIsVisible(true);
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+        onClose();
+      }, duration);
+      return () => clearTimeout(timer);
+    }
+  }, [error, duration, onClose]);
+
+  if (!error || !isVisible) return null;
 
   return (
-    <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive">
-      <FaExclamationTriangle className="h-4 w-4" />
-      <p>{error}</p>
+    <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-full max-w-xs px-4">
+      <div className="bg-destructive text-destructive-foreground px-4 py-3 rounded-md flex items-center gap-3 shadow-lg animate-in slide-in-from-top-8">
+        <FaExclamationTriangle className="h-5 w-5 shrink-0" />
+        <p className="text-sm font-medium flex-1 text-center">{error}</p>
+      </div>
     </div>
   );
 };

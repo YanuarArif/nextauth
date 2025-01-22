@@ -1,16 +1,49 @@
-import { FaCheckCircle } from "react-icons/fa";
+"use client";
+
+import { FaCheckCircle, FaTimes } from "react-icons/fa";
+import { useEffect, useState } from "react";
 
 interface SuccessMessageProps {
-  success?: string;
+  message?: string;
+  onClose: () => void;
+  duration?: number;
 }
 
-export const SuccessMessage = ({ success }: SuccessMessageProps) => {
-  if (!success) return null;
+export const SuccessMessage = ({
+  message,
+  onClose,
+  duration = 5000,
+}: SuccessMessageProps) => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (message) {
+      setIsVisible(true);
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+        onClose();
+      }, duration);
+      return () => clearTimeout(timer);
+    }
+  }, [message, duration, onClose]);
+
+  if (!message || !isVisible) return null;
 
   return (
-    <div className="bg-emerald-500/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-emerald-500">
-      <FaCheckCircle className="h-4 w-4" />
-      <p>{success}</p>
+    <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-full max-w-xs px-4">
+      <div className="bg-emerald-500 text-white px-4 py-3 rounded-md flex items-center gap-3 shadow-lg animate-in slide-in-from-top-8">
+        <FaCheckCircle className="h-5 w-5 shrink-0" />
+        <p className="text-sm font-medium flex-1 text-center">{message}</p>
+        <button
+          onClick={() => {
+            setIsVisible(false);
+            onClose();
+          }}
+          className="text-white/70 hover:text-white transition-colors"
+        >
+          <FaTimes className="h-4 w-4" />
+        </button>
+      </div>
     </div>
   );
 };

@@ -6,23 +6,30 @@ import bcrypt from "bcrypt";
 import { prisma } from "@/lib/prisma";
 
 export const daftar = async (values: z.infer<typeof DaftarSchema>) => {
+  // Validasi input menggunakan Zod schema
   const validatedFields = DaftarSchema.safeParse(values);
 
+  // Return error jika validasi gagal
   if (!validatedFields.success) {
     return { error: "Input tidak valid!" };
   }
 
+  // Destructure data yang sudah tervalidasi
   const { username, email, password } = validatedFields.data;
+  // Hash password sebelum disimpan ke database
   const hashedPassword = await bcrypt.hash(password, 10);
 
+  // Cek apakah email sudah terdaftar
   const existingUser = await prisma.user.findUnique({
     where: { email },
   });
 
+  // Return error jika email sudah terdaftar
   if (existingUser) {
     return { error: "Email sudah terdaftar!" };
   }
 
+  // Buat user baru di database
   await prisma.user.create({
     data: {
       name: username,
@@ -31,5 +38,6 @@ export const daftar = async (values: z.infer<typeof DaftarSchema>) => {
     },
   });
 
+  // Return success message jika pendaftaran berhasil
   return { success: "Login berhasil!" };
 };

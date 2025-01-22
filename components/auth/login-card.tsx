@@ -185,8 +185,16 @@ const LoginCard = () => {
                   )}
                 ></FormField>
               </div>
-              <ErrorMessage error={error} />
-              <SuccessMessage success={success} />
+              <ErrorMessage
+                error={error}
+                onClose={() => setError(undefined)}
+                duration={30000}
+              />
+              <SuccessMessage
+                message={success}
+                onClose={() => setError(undefined)}
+                duration={30000}
+              />
               {/* Tombol Masuk */}
               <Button
                 disabled={isPending}
