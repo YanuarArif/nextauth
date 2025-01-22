@@ -8,7 +8,7 @@ const rubik = Rubik({
 });
 
 export const metadata: Metadata = {
-  title: "Latihan Next Auth",
+  title: "Latihan NextAuth",
   description: "Latihan Next Auth Dengan Lengkap",
 };
 
