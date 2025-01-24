@@ -30,7 +30,7 @@ import {
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { DaftarSchema } from "@/app/schemas";
-import { daftar } from "@/actions/daftar";
+import { register } from "@/actions/register";
 import { ErrorMessage } from "../ui/errormessage";
 import { SuccessMessage } from "../ui/successmessage";
 // import { useRouter } from "next/navigation";
@@ -39,7 +39,7 @@ import { SuccessMessage } from "../ui/successmessage";
 //   setLogin: (login: SignInFlow) => void;
 // }
 
-const DaftarCard = () => {
+const RegisterCard = () => {
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
@@ -75,7 +75,7 @@ const DaftarCard = () => {
     setSuccess("");
 
     startTransition(() => {
-      daftar(values).then((data) => {
+      register(values).then((data) => {
         setError(data.error);
         setSuccess(data.success);
       });
@@ -232,7 +232,7 @@ const DaftarCard = () => {
             <p className="text-sm text-muted-foreground">
               Sudah punya akun?{" "}
               <span
-                onClick={() => router.push("/auth/login")}
+                onClick={() => router.push("/login")}
                 className="cursor-pointer font-bold text-blue-500 hover:underline"
               >
                 Login
@@ -247,7 +247,7 @@ const DaftarCard = () => {
         duration={3000}
       />
       <SuccessMessage
-        message={success}
+        success={success}
         onClose={() => setError(undefined)}
         duration={3000}
       />
@@ -255,4 +255,4 @@ const DaftarCard = () => {
   );
 };
 
-export default DaftarCard;
+export default RegisterCard;

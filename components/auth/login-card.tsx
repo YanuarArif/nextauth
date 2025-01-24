@@ -3,7 +3,7 @@
 import { Input } from "@/components/ui/input";
 import { FaFacebookSquare } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
-import { startTransition, useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { VscAccount } from "react-icons/vsc";
 import {
   MdOutlineLock,
@@ -79,8 +79,8 @@ const LoginCard = () => {
 
     startTransition(() => {
       login(values).then((data) => {
-        setError(data.error);
-        setSuccess(data.success);
+        setError(data?.error);
+        setSuccess(data?.success);
       });
     });
   };
@@ -191,7 +191,7 @@ const LoginCard = () => {
                 duration={30000}
               />
               <SuccessMessage
-                message={success}
+                success={success}
                 onClose={() => setError(undefined)}
                 duration={30000}
               />
@@ -247,7 +247,7 @@ const LoginCard = () => {
               <p className="text-sm text-muted-foreground">
                 Belum punya akun?{" "}
                 <span
-                  onClick={() => router.push("/auth/daftar")}
+                  onClick={() => router.push("/register")}
                   className="cursor-pointer text-blue-500 hover:underline font-bold"
                 >
                   Daftar

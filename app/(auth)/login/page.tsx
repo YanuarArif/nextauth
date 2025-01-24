@@ -3,7 +3,7 @@ import React from "react";
 
 const LoginPage = () => {
   return (
-    <div>
+    <div className="w-[350px] transition-all duration-500 ease-in-out md:w-[450px]">
       <LoginCard />
     </div>
   );

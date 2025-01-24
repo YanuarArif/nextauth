@@ -2,13 +2,12 @@
 
 import { DaftarSchema } from "@/app/schemas";
 import { z } from "zod";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 
-export const daftar = async (values: z.infer<typeof DaftarSchema>) => {
+export const register = async (values: z.infer<typeof DaftarSchema>) => {
   // Validasi input menggunakan Zod schema
   const validatedFields = DaftarSchema.safeParse(values);
-
   // Return error jika validasi gagal
   if (!validatedFields.success) {
     return { error: "Input tidak valid!" };
@@ -23,7 +22,6 @@ export const daftar = async (values: z.infer<typeof DaftarSchema>) => {
   const existingUser = await prisma.user.findUnique({
     where: { email },
   });
-
   // Return error jika email sudah terdaftar
   if (existingUser) {
     return { error: "Email sudah terdaftar!" };
@@ -39,5 +37,5 @@ export const daftar = async (values: z.infer<typeof DaftarSchema>) => {
   });
 
   // Return success message jika pendaftaran berhasil
-  return { success: "Login berhasil!" };
+  return { success: "Daftar berhasil!" };
 };

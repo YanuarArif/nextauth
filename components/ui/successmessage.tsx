@@ -4,20 +4,20 @@ import { FaCheckCircle, FaTimes } from "react-icons/fa";
 import { useEffect, useState } from "react";
 
 interface SuccessMessageProps {
-  message?: string;
+  success?: string;
   onClose: () => void;
   duration?: number;
 }
 
 export const SuccessMessage = ({
-  message,
+  success,
   onClose,
   duration = 5000,
 }: SuccessMessageProps) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    if (message) {
+    if (success) {
       setIsVisible(true);
       const timer = setTimeout(() => {
         setIsVisible(false);
@@ -25,15 +25,15 @@ export const SuccessMessage = ({
       }, duration);
       return () => clearTimeout(timer);
     }
-  }, [message, duration, onClose]);
+  }, [success, duration, onClose]);
 
-  if (!message || !isVisible) return null;
+  if (!success || !isVisible) return null;
 
   return (
     <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-full max-w-xs px-4">
       <div className="bg-emerald-500 text-white px-4 py-3 rounded-md flex items-center gap-3 shadow-lg animate-in slide-in-from-top-8">
         <FaCheckCircle className="h-5 w-5 shrink-0" />
-        <p className="text-sm font-medium flex-1 text-center">{message}</p>
+        <p className="text-sm font-medium flex-1 text-center">{success}</p>
         <button
           onClick={() => {
             setIsVisible(false);
