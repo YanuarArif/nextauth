@@ -1,6 +1,6 @@
 "use server";
 
-import { DaftarSchema } from "@/app/schemas";
+import { DaftarSchema } from "@/schemas/zod";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";

@@ -29,8 +29,8 @@ import {
 } from "@/components/ui/form";
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { DaftarSchema } from "@/app/schemas";
-import { register } from "@/actions/register";
+import { DaftarSchema } from "@/schemas/zod";
+import { register } from "@/actions/auth/register";
 import { ErrorMessage } from "../ui/errormessage";
 import { SuccessMessage } from "../ui/successmessage";
 // import { useRouter } from "next/navigation";

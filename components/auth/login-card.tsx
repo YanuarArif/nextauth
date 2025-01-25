@@ -31,10 +31,12 @@ import {
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { FaXTwitter } from "react-icons/fa6";
-import { login } from "@/actions/login";
-import { LoginSchema } from "@/app/schemas";
+import { login } from "@/actions/auth/login";
+import { LoginSchema } from "@/schemas/zod";
 import { ErrorMessage } from "../ui/errormessage";
 import { SuccessMessage } from "../ui/successmessage";
+import { signIn } from "@/lib/auth";
+import { signInWithGoogle } from "@/actions/auth/oauth";
 
 // interface LoginCardProps {
 //   setLogin: (login: SignInFlow) => void;
@@ -79,8 +81,8 @@ const LoginCard = () => {
 
     startTransition(() => {
       login(values).then((data) => {
-        setError(data?.error);
-        setSuccess(data?.success);
+        setError(data.error);
+        setSuccess(data.success);
       });
     });
   };
@@ -217,7 +219,7 @@ const LoginCard = () => {
               {/* Google */}
               <Button
                 disabled={isPending}
-                onClick={() => {}}
+                onClick={signInWithGoogle}
                 variant={"outline"}
                 className="flex hover:bg-blue-100 text-xs -space-x-1"
               >

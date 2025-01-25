@@ -11,22 +11,35 @@ datasource db {
 }
 
 model User {
-  id                String       @id @default(uuid())
-  email             String       @unique
-  password          String?
-  name              String?
-  emailVerified     DateTime?
-  verificationToken String?      @unique
-  resetToken        String?      @unique
-  resetTokenExpires DateTime?
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
-  sessions          Session[]
-  accounts          Account[]
-  roles             Role[]       @relation("UserRoles")
-  permissions       Permission[] @relation("UserPermissions")
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  role          String?   @default("user")
+  password      String?
+  accounts      Account[]
+  sessions      Session[]
+  token         String?   @unique
+  provider      String?   @default("credentials")
+}
 
-  @@map("users")
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
@@ -39,23 +52,6 @@ model Session {
   @@map("sessions")
 }
 
-model Account {
-  id                 String    @id @default(uuid())
-  userId             String
-  user               User      @relation(fields: [userId], references: [id])
-  providerType       String
-  providerId         String
-  providerAccountId  String
-  refreshToken       String?
-  accessToken        String?
-  accessTokenExpires DateTime?
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
-
-  @@unique([providerId, providerAccountId])
-  @@map("accounts")
-}
-
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -63,24 +59,4 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verification_tokens")
-}
-
-model Role {
-  id          String       @id @default(uuid())
-  name        String       @unique
-  description String?
-  users       User[]       @relation("UserRoles")
-  permissions Permission[] @relation("RolePermissions")
-
-  @@map("roles")
-}
-
-model Permission {
-  id          String  @id @default(uuid())
-  name        String  @unique
-  description String?
-  users       User[]  @relation("UserPermissions")
-  roles       Role[]  @relation("RolePermissions")
-
-  @@map("permissions")
 }
