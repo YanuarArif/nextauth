@@ -2,7 +2,7 @@ import DashboardScreen from "@/components/layout/dashboard";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-const Dashboard = async () => {
+const DashboardPage = async () => {
   const session = await auth();
   if (!session) redirect("/login");
 
@@ -13,4 +13,4 @@ const Dashboard = async () => {
   );
 };
 
-export default Dashboard;
+export default DashboardPage;
