@@ -3,9 +3,9 @@ import Google from "next-auth/providers/google";
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { LoginSchema } from "@/schemas/zod";
-import { prisma } from "./prisma";
+import { database } from "./database";
 import bcrypt from "bcryptjs";
-import Resend from "next-auth/providers/resend";
+import ForwardEmail from "next-auth/providers/forwardemail";
 
 // Notice this is only an object, not a full Auth.js instance
 export default {
@@ -25,7 +25,7 @@ export default {
         // Ambil email dan password dari data yang sudah divalidasi
         const { email, password } = validatedFields.data;
         // Cari pengguna berdasarkan email
-        const user = await prisma.user.findUnique({
+        const user = await database.user.findUnique({
           where: { email },
         });
 
@@ -55,14 +55,7 @@ export default {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
 
-    // Provider untuk login dengan Resend (email)
-    Resend({
-      apiKey: process.env.AUTH_RESEND_KEY!,
-      from: "no-reply@company.com",
-
-      async generateVerificationToken() {
-        return crypto.randomUUID();
-      },
-    }),
+    // Provider untuk kirim email (ForwardEmail.net)
+    ForwardEmail,
   ],
 } satisfies NextAuthConfig;

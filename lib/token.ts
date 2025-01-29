@@ -1,6 +1,6 @@
 import { randomBytes } from "crypto";
-import { hash, compare } from "bcryptjs"; // Added hash
-import { prisma } from "./prisma";
+import { hash, compare } from "bcryptjs";
+import { database } from "./database";
 
 // Security improvement: Custom error class
 class TokenError extends Error {
@@ -17,15 +17,17 @@ export const generateVerificationToken = async (email: string) => {
     const hashedToken = await hash(token, 10); // Hash the token
     const expires = new Date(Date.now() + 3600000); // 1 hour
 
-    // Delete existing tokens for this email first
-    await prisma.verificationToken.deleteMany({
+    // Delete token lama jika ada
+    await database.verificationToken.deleteMany({
       where: { identifier: email },
     });
 
-    await prisma.verificationToken.create({
+    const lowerCaseEmail = email.toLowerCase();
+    // Membuat token baru
+    await database.verificationToken.create({
       data: {
-        identifier: email,
-        token: hashedToken, // Store hashed token
+        identifier: lowerCaseEmail,
+        token: hashedToken,
         expires,
       },
     });
@@ -40,7 +42,7 @@ export const generateVerificationToken = async (email: string) => {
 export const validateToken = async (email: string, token: string) => {
   try {
     // Cari token di db by email
-    const verificationToken = await prisma.verificationToken.findFirst({
+    const verificationToken = await database.verificationToken.findFirst({
       where: { identifier: email },
       orderBy: { expires: "desc" },
     });
@@ -53,7 +55,7 @@ export const validateToken = async (email: string, token: string) => {
     // Token expired
     if (verificationToken.expires < new Date()) {
       // Hapus token expired
-      await prisma.verificationToken.delete({
+      await database.verificationToken.delete({
         where: { id: verificationToken.id },
       });
       throw new TokenError("Token sudah expired");
@@ -67,7 +69,7 @@ export const validateToken = async (email: string, token: string) => {
     }
 
     // Delete token di db setelah digunakan
-    await prisma.verificationToken.delete({
+    await database.verificationToken.delete({
       where: { id: verificationToken.id },
     });
 
@@ -81,7 +83,7 @@ export const validateToken = async (email: string, token: string) => {
 // Delete token di db jika expired
 export const deleteExpiredTokens = async () => {
   try {
-    await prisma.verificationToken.deleteMany({
+    await database.verificationToken.deleteMany({
       where: { expires: { lt: new Date() } },
     });
   } catch (error) {

@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 import crypto from "crypto";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/database";
 import { NextResponse } from "next/server";
 
 const resend = new Resend(process.env.AUTH_RESEND_KEY);

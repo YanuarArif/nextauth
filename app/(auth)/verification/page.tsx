@@ -1,7 +1,7 @@
 import VerifyEmailPage from "@/components/auth/email-verification";
 import React from "react";
 
-const VerifyPage = () => {
+const VerificationPage = () => {
   return (
     <div className="h-full flex items-center justify-center">
       <VerifyEmailPage />
@@ -9,4 +9,4 @@ const VerifyPage = () => {
   );
 };
 
-export default VerifyPage;
+export default VerificationPage;

@@ -13,17 +13,21 @@ datasource db {
 model User {
   id            String    @id @default(cuid())
   name          String?
+  username      String?   @unique
   email         String?   @unique
   emailVerified DateTime?
   image         String?
   role          String?   @default("user")
   password      String?
-  accounts      Account[]
-  sessions      Session[]
   token         String?   @unique
   provider      String?   @default("credentials")
+  accounts      Account[]
+  sessions      Session[]
+
+  @@map("users")
 }
 
+// Account adalah model yang merepresentasikan akun pengguna yang terhubung dengan external service seperti Google, Facebook, Twitter, Github, dan lainnya.
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -40,6 +44,7 @@ model Account {
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@map("accounts")
 }
 
 model Session {

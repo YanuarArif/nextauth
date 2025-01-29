@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Resend from "next-auth/providers/resend";
-import { prisma } from "@/lib/prisma";
+import { database } from "@/lib/database";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
 import { LoginSchema } from "@/schemas/zod";
@@ -9,7 +9,7 @@ import bcrypt from "bcryptjs";
 import authConfig from "./auth.config";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(database),
   session: { strategy: "jwt" },
   pages: { signIn: "/login" },
   ...authConfig,
@@ -45,7 +45,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async signIn({ user, account, profile }) {
       // Block Google login if email exists but isn't verified
       if (account?.provider === "google") {
-        const existingUser = await prisma.user.findUnique({
+        const existingUser = await database.user.findUnique({
           where: { email: user.email! },
         });
 
