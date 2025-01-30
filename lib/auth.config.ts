@@ -1,5 +1,6 @@
 // this file for edge browser compatible
 import Google from "next-auth/providers/google";
+import Resend from "next-auth/providers/resend";
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { LoginSchema } from "@/schemas/zod";
@@ -29,13 +30,13 @@ export default {
           where: { email },
         });
 
-        // Block login jika email belum diverifikasi
-        if (user && !user.emailVerified) {
-          throw new Error("Verify your email first! Check your inbox.");
-        }
         // Jika pengguna tidak ditemukan, lempar error
         if (!user || !user.password) {
           throw new Error("User tidak ditemukan atau password salah!");
+        }
+        // Block login jika email belum diverifikasi
+        if (user && !user.emailVerified) {
+          throw new Error("Verify your email first! Check your inbox.");
         }
 
         // Bandingkan password yang dimasukkan dengan hash password di database
@@ -54,8 +55,5 @@ export default {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
-
-    // Provider untuk kirim email (ForwardEmail.net)
-    ForwardEmail,
   ],
 } satisfies NextAuthConfig;

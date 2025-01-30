@@ -1,18 +1,21 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
 import Resend from "next-auth/providers/resend";
 import { database } from "@/lib/database";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import Credentials from "next-auth/providers/credentials";
-import { LoginSchema } from "@/schemas/zod";
-import bcrypt from "bcryptjs";
 import authConfig from "./auth.config";
 
+const combinedProviders = [
+  ...authConfig.providers,
+  Resend({
+    from: "updates.example.com",
+  }),
+];
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  providers: combinedProviders,
   adapter: PrismaAdapter(database),
   session: { strategy: "jwt" },
   pages: { signIn: "/login" },
-  ...authConfig,
   // Callbacks untuk pengganti middleware
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
@@ -42,7 +45,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
 
     // Callback untuk menambahkan logika tambahan setelah autentikasi berhasil
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account }) {
       // Block Google login if email exists but isn't verified
       if (account?.provider === "google") {
         const existingUser = await database.user.findUnique({

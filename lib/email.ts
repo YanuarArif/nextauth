@@ -1,18 +1,17 @@
 import { Resend } from "resend";
-import VerifyEmailScreen from "@/components/auth/send-verify-email";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const domain = process.env.NEXTAUTH_URL;
+const domain = process.env.NEXT_PUBLIC_APP_URL;
 
-export const sendVerificationEmail = async (email: string, token: string) => {
+export const resendVerificationEmail = async (email: string, token: string) => {
   const verificationLink = `${domain}/verify-email?token=${token}`;
 
   try {
     const { data, error } = await resend.emails.send({
-      from: "Verifikasi <no-reply@yourdomain.com>",
+      from: "Verifikasi <onboarding@resend.dev>",
       to: email,
       subject: "Verifikasi Email Anda",
-      react: VerifyEmailScreen({ verificationLink }),
+      html: `<p>Klik <a href="${verificationLink}">di sini</a> untuk verifikasi email Anda.</p>`,
     });
 
     if (error) {

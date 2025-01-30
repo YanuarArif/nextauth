@@ -21,7 +21,7 @@ import {
 } from "react-icons/fi";
 import Link from "next/link";
 
-export default function VerifyEmailPage() {
+export default function VerificationEmail() {
   const [status, setStatus] = useState<"loading" | "success" | "error">(
     "loading"
   );

@@ -70,15 +70,29 @@ const RegisterCard = () => {
     return () => subscription.unsubscribe();
   }, [form]);
 
-  const onSubmit = (values: z.infer<typeof DaftarSchema>) => {
+  const onSubmit = async (values: z.infer<typeof DaftarSchema>) => {
     setError("");
     setSuccess("");
 
     startTransition(() => {
-      register(values).then((data) => {
-        setError(data.error);
-        setSuccess(data.success);
-      });
+      register(values)
+        .then((data) => {
+          if (data.error) {
+            setError(data.error);
+          } else {
+            setSuccess(data.success);
+
+            // Redirect after 2 sec
+            setTimeout(() => {
+              if (data.redirectTo) {
+                router.push(data.redirectTo);
+              }
+            }, 2000);
+          }
+        })
+        .catch((error) => {
+          setError("Terjadi kesalahan saat mendaftar");
+        });
     });
   };
 
