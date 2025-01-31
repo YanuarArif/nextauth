@@ -64,9 +64,14 @@ export default {
         "50%": { transform: "translateX(5px)" },
         "75%": { transform: "translateX(-5px)" },
       },
+      spin: {
+        from: { transform: "rotate(0deg)" },
+        to: { transform: "rotate(360deg)" },
+      },
     },
     animation: {
       vibrate: "vibrate 0.3s ease-in-out",
+      spin: "spin 1s linear infinite",
     },
   },
   plugins: [require("tailwindcss-animate")],

@@ -19,14 +19,14 @@ export const generateVerificationToken = async (email: string) => {
 
     // Delete token lama jika ada
     await database.verificationToken.deleteMany({
-      where: { identifier: email },
+      where: { email },
     });
 
     const lowerCaseEmail = email.toLowerCase();
     // Membuat token baru
     await database.verificationToken.create({
       data: {
-        identifier: lowerCaseEmail,
+        email: lowerCaseEmail,
         token: hashedToken,
         expires,
       },
@@ -35,58 +35,5 @@ export const generateVerificationToken = async (email: string) => {
     return token; // Return raw token for email
   } catch (error) {
     throw new TokenError("Gagal membuat token verifikasi");
-  }
-};
-
-// function untuk verifikasi token verifikasi email
-export const validateToken = async (email: string, token: string) => {
-  try {
-    // Cari token di db by email
-    const verificationToken = await database.verificationToken.findFirst({
-      where: { identifier: email },
-      orderBy: { expires: "desc" },
-    });
-
-    // Token beda
-    if (!verificationToken) {
-      throw new TokenError("Token tidak valid");
-    }
-
-    // Token expired
-    if (verificationToken.expires < new Date()) {
-      // Hapus token expired
-      await database.verificationToken.delete({
-        where: { id: verificationToken.id },
-      });
-      throw new TokenError("Token sudah expired");
-    }
-
-    // Compare token dengan token di db menggunakan bcrypt
-    const isValid = await compare(token, verificationToken.token);
-
-    if (!isValid) {
-      throw new TokenError("Token tidak valid");
-    }
-
-    // Delete token di db setelah digunakan
-    await database.verificationToken.delete({
-      where: { id: verificationToken.id },
-    });
-
-    return true;
-  } catch (error) {
-    if (error instanceof TokenError) throw error;
-    throw new TokenError("Gagal memverifikasi token");
-  }
-};
-
-// Delete token di db jika expired
-export const deleteExpiredTokens = async () => {
-  try {
-    await database.verificationToken.deleteMany({
-      where: { expires: { lt: new Date() } },
-    });
-  } catch (error) {
-    console.error("Gagal menghapus token expired:", error);
   }
 };

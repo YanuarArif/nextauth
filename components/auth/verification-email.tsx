@@ -74,7 +74,7 @@ export default function VerificationEmail() {
   };
 
   return (
-    <div className="flex items-center justify-center  p-4">
+    <div className="flex items-center justify-center p-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-2 text-center">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
@@ -145,7 +145,7 @@ export default function VerificationEmail() {
                     Kirim ulang dalam {countdown} detik
                   </>
                 ) : (
-                  "Kirim Email Verifikasi Ulang"
+                  "Kirim Ulang Verifikasi Email"
                 )}
               </Button>
             </div>

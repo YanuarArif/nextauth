@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/database";
+import { database } from "@/lib/database";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
@@ -7,12 +7,12 @@ export async function GET(request: Request) {
 
   if (!token) return NextResponse.redirect("/login?error=invalid_token");
 
-  const user = await prisma.user.findFirst({ where: { token } });
+  const user = await database.user.findFirst({ where: { token } });
 
   if (!user) return NextResponse.redirect("/login?error=invalid_token");
 
   // Mark email as verified & clear token
-  await prisma.user.update({
+  await database.user.update({
     where: { id: user.id },
     data: { emailVerified: new Date(), token: null },
   });

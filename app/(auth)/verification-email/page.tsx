@@ -1,9 +1,9 @@
-import VerificationEmail from "@/components/auth/email-verification";
+import VerificationEmail from "@/components/auth/verification-email";
 import React from "react";
 
 const VerificationPage = () => {
   return (
-    <div className="h-full flex items-center justify-center">
+    <div className="flex items-center justify-center">
       <VerificationEmail />
     </div>
   );
