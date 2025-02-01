@@ -1,12 +1,12 @@
-import SendVerificationEmail from "@/components/auth/send-verify-email";
-import React from "react";
+import React from 'react'
+import SendVerificationEmail from '@/components/auth/send-verification'
 
-const SendVerificationEmailPage = () => {
+const SendVerificationPage = () => {
   return (
     <div>
       <SendVerificationEmail />
     </div>
-  );
-};
+  )
+}
 
-export default SendVerificationEmailPage;
+export default SendVerificationPage

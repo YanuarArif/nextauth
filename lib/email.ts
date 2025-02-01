@@ -4,7 +4,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const domain = process.env.NEXT_PUBLIC_APP_URL;
 
 export const resendVerificationEmail = async (email: string, token: string) => {
-  const verificationLink = `${domain}/verification-email?token=${token}`;
+  const verificationLink = `${domain}/verification-email?token=${token}&email=${email}`;
 
   try {
     const { data, error } = await resend.emails.send({

@@ -31,12 +31,12 @@ import {
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { FaXTwitter } from "react-icons/fa6";
-import { login } from "@/actions/auth/login";
+import { login } from "@/actions/login";
 import { LoginSchema } from "@/schemas/zod";
 import { ErrorMessage } from "../ui/errormessage";
 import { SuccessMessage } from "../ui/successmessage";
 import { signIn } from "@/lib/auth";
-import { signInWithGoogle } from "@/actions/auth/oauth";
+import { signInWithGoogle } from "@/actions/oauth";
 
 // interface LoginCardProps {
 //   setLogin: (login: SignInFlow) => void;

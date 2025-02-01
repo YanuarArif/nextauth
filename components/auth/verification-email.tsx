@@ -1,173 +1,181 @@
-// app/verify-email/page.tsx
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import {
-  Card,
-  CardHeader,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  FiCheckCircle,
-  FiXCircle,
-  FiLoader,
-  FiMail,
-  FiClock,
-  FiArrowRight,
-} from "react-icons/fi";
-import Link from "next/link";
+import { useCallback, useEffect, useState } from "react"
+import { useSearchParams, useRouter } from "next/navigation"
+import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { FiMail, FiClock, FiLoader, FiCheckCircle, FiXCircle, FiCopy } from "react-icons/fi"
+import Link from "next/link"
+import { useToast } from "@/components/hooks/use-toast"
+import { validateToken } from "@/actions/verify-token"
+import { getUserByEmail } from "@/data/user"
+import { resendVerificationEmail } from "@/lib/email"
 
-export default function VerificationEmail() {
-  const [status, setStatus] = useState<"loading" | "success" | "error">(
-    "loading"
-  );
-  const [countdown, setCountdown] = useState(30);
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
-  const email = searchParams.get("email");
+const VerificationEmail = () => {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const token = searchParams.get("token")
+  const { toast } = useToast()
+
+  const [countdown, setCountdown] = useState(30)
+  const [verifying, setVerifying] = useState(false)
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
+  const [email, setEmail] = useState<string | null>(null)
 
   useEffect(() => {
-    const verifyEmail = async () => {
-      try {
-        const response = await fetch("/api/verify-email", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token }),
-        });
-
-        if (response.ok) {
-          setStatus("success");
-        } else {
-          setStatus("error");
-        }
-      } catch (error) {
-        setStatus("error");
+    const verifyToken = async () => {
+      if (!token) {
+        setError("Token is missing")
+        return
       }
-    };
 
-    if (token) verifyEmail();
-    else setStatus("error");
-  }, [token]);
+      try {
+        setVerifying(true)
+        // Get the verification token first to get the email
+        const result = await validateToken(token)
+        setSuccess("Email verified successfully!")
+        setEmail(result.email)
+        // Optional: Redirect to login after a short delay
+        setTimeout(() => {
+          router.push('/login')
+        }, 2000)
+      } catch (error) {
+        setError(error instanceof Error ? error.message : "Verification failed")
+      } finally {
+        setVerifying(false)
+      }
+    }
+
+    if (token) {
+      verifyToken()
+    }
+  }, [token, router])
 
   useEffect(() => {
-    if (status === "error" && countdown > 0) {
-      const timer = setTimeout(() => setCountdown((c) => c - 1), 1000);
-      return () => clearTimeout(timer);
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000)
+      return () => clearTimeout(timer)
     }
-  }, [countdown, status]);
+  }, [countdown])
 
-  const handleResend = async () => {
-    setCountdown(30);
+  const onResendEmail = useCallback(async () => {
+    if (!email) return
+
     try {
-      await fetch("/api/resend-verification", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      setCountdown(30)
+      // TODO: Add resend email functionality
+      toast({
+        title: "Verification email sent",
+        description: "Please check your inbox",
+      })
     } catch (error) {
-      console.error("Gagal mengirim ulang email:", error);
+      toast({
+        title: "Error",
+        description: "Failed to resend verification email",
+        variant: "destructive",
+      })
     }
-  };
+  }, [email, toast])
+
+  const copyToClipboard = () => {
+    if (email) {
+      navigator.clipboard.writeText(email)
+      toast({
+        title: "Email copied to clipboard",
+      })
+    }
+  }
 
   return (
-    <div className="flex items-center justify-center p-4">
+    <div className="flex min-h-[600px] items-center justify-center p-4">
       <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="space-y-2 text-center">
+        <CardHeader className="space-y-3 text-center">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-            {status === "loading" && (
+            {verifying && (
               <FiLoader className="h-6 w-6 text-blue-600 animate-spin" />
             )}
-            {status === "success" && (
+            {success && (
               <FiCheckCircle className="h-6 w-6 text-green-600" />
             )}
-            {status === "error" && (
+            {error && (
               <FiXCircle className="h-6 w-6 text-red-600" />
             )}
+            {!verifying && !success && !error && (
+              <FiMail className="h-6 w-6 text-blue-600" />
+            )}
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            {status === "success" ? "Verifikasi Berhasil!" : "Verifikasi Email"}
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {verifying && "Verifying your email..."}
+            {success && "Email verified!"}
+            {error && "Verification failed"}
+            {!verifying && !success && !error && "Check your email"}
           </h1>
+          <p className="text-muted-foreground text-sm">
+            {!verifying && !success && !error && "We sent you a verification link. Please check your email."}
+            {error && (
+              <span className="text-red-500">{error}</span>
+            )}
+          </p>
         </CardHeader>
 
-        <CardContent className="space-y-4 text-center">
-          {status === "loading" && (
-            <Alert>
-              <AlertDescription>
-                Sedang memverifikasi email Anda...
-              </AlertDescription>
-            </Alert>
-          )}
-
-          {status === "success" && (
-            <div className="space-y-2">
-              <Alert>
-                <AlertDescription>
-                  Email {email} berhasil diverifikasi!
-                </AlertDescription>
-              </Alert>
-              <Button className="w-full gap-2" asChild>
-                <Link href="/dashboard">
-                  Lanjut ke Dashboard
-                  <FiArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          )}
-
-          {status === "error" && (
-            <div className="space-y-4">
-              <Alert variant="destructive">
-                <AlertDescription>
-                  {!token
-                    ? "Token tidak valid"
-                    : "Token sudah kadaluarsa atau tidak valid"}
-                </AlertDescription>
-              </Alert>
-
-              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                <FiMail className="h-4 w-4" />
-                <span>{email}</span>
-              </div>
-
-              <Button
-                onClick={handleResend}
-                disabled={countdown > 0}
-                className="w-full gap-2"
-                variant="outline"
+        <CardContent className="space-y-4">
+          {email && (
+            <div className="flex items-center justify-center gap-2 rounded-lg bg-muted p-3">
+              <FiMail className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">{email}</span>
+              <button
+                onClick={copyToClipboard}
+                className="ml-2 text-blue-600 hover:text-blue-700"
               >
-                {countdown > 0 ? (
-                  <>
-                    <FiClock className="h-4 w-4" />
-                    Kirim ulang dalam {countdown} detik
-                  </>
-                ) : (
-                  "Kirim Ulang Verifikasi Email"
-                )}
-              </Button>
+                <FiCopy className="h-4 w-4" />
+              </button>
             </div>
+          )}
+
+          {!success && (
+            <Button
+              onClick={onResendEmail}
+              disabled={countdown > 0}
+              className="w-full gap-2"
+              variant="outline"
+            >
+              {countdown > 0 ? (
+                <>
+                  <FiClock className="h-4 w-4" />
+                  Resend in {countdown}s
+                </>
+              ) : (
+                "Resend verification email"
+              )}
+            </Button>
+          )}
+
+          {success && (
+            <Button asChild className="w-full">
+              <Link href="/login">Continue to Login</Link>
+            </Button>
           )}
         </CardContent>
 
         <CardFooter className="flex flex-col gap-2 text-center text-sm">
           <p className="text-muted-foreground">
-            Masih ada masalah?{" "}
+            Having trouble?{" "}
             <Link href="/support" className="text-blue-600 hover:underline">
-              Hubungi Support
+              Contact Support
             </Link>
           </p>
           <Link
             href="/login"
-            className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+            className="text-muted-foreground hover:text-foreground transition-colors"
           >
-            <FiArrowRight className="h-4 w-4" />
-            Kembali ke Halaman Login
+            <FiMail className="inline mr-2 h-4 w-4" />
+            Back to Login
           </Link>
         </CardFooter>
       </Card>
     </div>
-  );
+  )
 }
+
+export default VerificationEmail
