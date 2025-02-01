@@ -137,7 +137,7 @@ const LoginCard = () => {
                       )}
                     </FormItem>
                   )}
-                ></FormField>
+                />
               </div>
               {/* Password Form */}
               <div className="relative">
@@ -185,7 +185,7 @@ const LoginCard = () => {
                       )}
                     </FormItem>
                   )}
-                ></FormField>
+                />
               </div>
               <ErrorMessage
                 error={error}

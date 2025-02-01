@@ -3,7 +3,6 @@ import Resend from "next-auth/providers/resend";
 import { database } from "@/lib/database";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import authConfig from "./auth.config";
-import {NextRequest} from "next/server";
 
 const combinedProviders = [
   ...authConfig.providers,
@@ -21,8 +20,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const pathname  = nextUrl.pathname;
-      const isAuthRoute = ["/login", "/register"].includes(pathname);
+      const pathname = nextUrl.pathname;
+      const isAuthRoute = [
+        "/login",
+        "/register",
+        "/send-verification",
+        "/verification-email",
+      ].includes(pathname);
       const protectedRoutes = ["/dashboard", "/user"];
 
       if (isLoggedIn && isAuthRoute) {

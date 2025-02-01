@@ -145,7 +145,7 @@ const RegisterCard = () => {
                       )}
                     </FormItem>
                   )}
-                ></FormField>
+                />
               </div>
               {/* Email Form */}
               <div className="relative">
@@ -178,7 +178,7 @@ const RegisterCard = () => {
                       )}
                     </FormItem>
                   )}
-                ></FormField>
+                />
               </div>
               {/* Password Form */}
               <div className="relative">
@@ -225,7 +225,7 @@ const RegisterCard = () => {
                       )}
                     </FormItem>
                   )}
-                ></FormField>
+                />
               </div>
 
               {/* Tombol Daftar */}
