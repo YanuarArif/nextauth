@@ -1,6 +1,5 @@
 import { Poppins } from "next/font/google";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { LoginButton } from "@/components/auth/login-button";
 
 const font = Poppins({
@@ -26,11 +25,7 @@ export default function Home() {
           menggunakan tools seperti supabase, clerk, firebase, dll
         </p>
         <div>
-          <LoginButton>
-            <Button variant="secondary" size="lg" className="">
-              Login
-            </Button>
-          </LoginButton>
+          <LoginButton />
         </div>
       </div>
     </main>

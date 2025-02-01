@@ -1,5 +1,4 @@
 import { randomBytes } from "crypto";
-import { hash, compare } from "bcryptjs";
 import { database } from "./database";
 
 // Security improvement: Custom error class
@@ -14,7 +13,6 @@ class TokenError extends Error {
 export const generateVerificationToken = async (email: string) => {
   try {
     const token = randomBytes(32).toString("hex");
-    const hashedToken = await hash(token, 10); // Hash the token
     const expires = new Date(Date.now() + 3600000); // 1 hour
 
     // Delete token lama jika ada
@@ -27,7 +25,7 @@ export const generateVerificationToken = async (email: string) => {
     await database.verificationToken.create({
       data: {
         email: lowerCaseEmail,
-        token: hashedToken,
+        token,
         expires,
       },
     });
