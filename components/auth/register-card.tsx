@@ -42,8 +42,7 @@ import { SuccessMessage } from "../ui/successmessage";
 const RegisterCard = () => {
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
-  const [isPending, startTransition] = useTransition();
-  const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [isAuthenticating, startTransition] = useTransition();
   const [showPassword, setShowPassword] = useState(false);
   const [showMessage, setShowMessage] = useState(true);
   const router = useRouter();
@@ -62,8 +61,8 @@ const RegisterCard = () => {
     const subscription = form.watch(() => {
       if (Object.keys(form.formState.errors).length > 0) {
         setShowMessage(true);
-        const timer = setTimeout(() => setShowMessage(false), 3000);
-        return () => clearTimeout(timer);
+        // const timer = setTimeout(() => setShowMessage(false), 5000);
+        // return () => clearTimeout(timer);
       }
     });
 
@@ -98,9 +97,23 @@ const RegisterCard = () => {
 
   return (
     <>
+      <ErrorMessage
+        error={error}
+        onClose={() => setError(undefined)}
+        duration={5000}
+      />
+      <SuccessMessage
+        success={success}
+        onClose={() => setSuccess(undefined)}
+        duration={5000}
+      />
       <Card
         className={`w-full h-full ${
-          error ? "border-4 border-destructive animate-vibrate" : ""
+          error
+            ? "border-4 border-destructive animate-vibrate"
+            : success
+            ? "border-4 border-emerald-500"
+            : ""
         }`}
       >
         <CardHeader className="flex items-center text-center">
@@ -227,14 +240,17 @@ const RegisterCard = () => {
                   )}
                 />
               </div>
-
               {/* Tombol Daftar */}
               <Button
                 type="submit"
                 disabled={isAuthenticating}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white h-10"
               >
-                <p className="text-base">Daftar</p>
+                {isAuthenticating ? (
+                  <p className="text-base">Memproses...</p>
+                ) : (
+                  <p className="text-base">Daftar</p>
+                )}
               </Button>
             </form>
           </Form>
@@ -255,16 +271,6 @@ const RegisterCard = () => {
           </div>
         </CardContent>
       </Card>
-      <ErrorMessage
-        error={error}
-        onClose={() => setError(undefined)}
-        duration={3000}
-      />
-      <SuccessMessage
-        success={success}
-        onClose={() => setError(undefined)}
-        duration={3000}
-      />
     </>
   );
 };

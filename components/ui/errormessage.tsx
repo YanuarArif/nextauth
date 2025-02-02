@@ -12,7 +12,7 @@ interface ErrorMessageProps {
 export const ErrorMessage = ({
   error,
   onClose,
-  duration = 5000,
+  duration,
 }: ErrorMessageProps) => {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -30,10 +30,12 @@ export const ErrorMessage = ({
   if (!error || !isVisible) return null;
 
   return (
-    <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-full max-w-xs px-4">
+    <div className="fixed top-14 left-1/2 -translate-x-1/2 z-50 w-full max-w-xs px-4">
       <div className="bg-destructive text-destructive-foreground px-4 py-3 rounded-md flex items-center gap-3 shadow-lg animate-in slide-in-from-top-8">
         <FaExclamationTriangle className="h-5 w-5 shrink-0" />
-        <p className="text-sm font-medium flex-1 text-center">{error}</p>
+        <p className="text-sm font-medium flex-1 text-center whitespace-pre-line">
+          {error}
+        </p>
       </div>
     </div>
   );

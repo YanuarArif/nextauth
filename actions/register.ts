@@ -6,7 +6,6 @@ import bcrypt from "bcryptjs";
 import { database } from "@/lib/database";
 import { generateVerificationToken } from "@/lib/token";
 import { resendVerificationEmail } from "@/lib/email";
-import { redirect } from "next/navigation";
 
 export const register = async (values: z.infer<typeof DaftarSchema>) => {
   // Validasi input menggunakan Zod schema
@@ -33,7 +32,9 @@ export const register = async (values: z.infer<typeof DaftarSchema>) => {
     // Return error jika username/email sudah digunakan
     if (existingUser) {
       if (existingUser.username === username) {
-        return { error: "Username tidak tersedia!" };
+        return {
+          error: "Username tidak tersedia!",
+        };
       }
       if (existingUser.email === email) {
         return { error: "Email sudah terdaftar!" };
@@ -57,7 +58,7 @@ export const register = async (values: z.infer<typeof DaftarSchema>) => {
     await resendVerificationEmail(email, verificationToken);
 
     return {
-      success: "Pendaftaran berhasil! Cek email untuk verifikasi",
+      success: "Pendaftaran berhasil!\nCek email untuk verifikasi",
       redirectTo: `/send-verification?email=${encodeURIComponent(email)}`,
     };
   } catch (error) {

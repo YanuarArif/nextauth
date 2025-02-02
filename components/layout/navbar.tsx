@@ -21,12 +21,12 @@ export const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className=" md:flex items-center gap-4">
-            <Button asChild variant="ghost">
+          <div className="flex items-center gap-4">
+            <Button asChild variant="default">
               <Link href="/login">Login</Link>
             </Button>
 
-            <Button asChild variant="ghost">
+            <Button asChild variant="default">
               <Link href="/register">Registrasi</Link>
             </Button>
           </div>

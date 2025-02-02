@@ -61,12 +61,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         });
 
         if (
-          existingUser?.provider === "credentials" &&
+          existingUser &&
+          existingUser.provider === "credentials" &&
           !existingUser.emailVerified
         ) {
-          throw new Error(
-            "Email sudah terdaftar. Silakan verifikasi email Anda sebelum login dengan Google."
-          );
+          await database.user.update({
+            where: { id: existingUser.id },
+            data: {
+              emailVerified: new Date(),
+            },
+          });
         }
       }
       return true;

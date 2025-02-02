@@ -48,7 +48,6 @@ const LoginCard = () => {
   const [isPending, startTransition] = useTransition();
   const [showPassword, setShowPassword] = useState(false);
   const [showMessage, setShowMessage] = useState(true);
-  // const [isLogin, setIsLogin] = useState(false);
   const router = useRouter();
 
   // cek session login
@@ -67,7 +66,7 @@ const LoginCard = () => {
     const subscription = form.watch(() => {
       if (Object.keys(form.formState.errors).length > 0) {
         setShowMessage(true);
-        // const timer = setTimeout(() => setShowMessage(false), 30000);
+        // const timer = setTimeout(() => setShowMessage(false), 5000);
         // return () => clearTimeout(timer);
       }
     });
@@ -81,8 +80,11 @@ const LoginCard = () => {
 
     startTransition(() => {
       login(values).then((data) => {
-        setError(data.error);
-        setSuccess(data.success);
+        if (data.error) {
+          setError(data.error);
+        } else {
+          setSuccess(data.success);
+        }
       });
     });
   };
@@ -91,6 +93,16 @@ const LoginCard = () => {
 
   return (
     <>
+      <ErrorMessage
+        error={error}
+        onClose={() => setError(undefined)}
+        duration={5000}
+      />
+      <SuccessMessage
+        success={success}
+        onClose={() => setSuccess(undefined)}
+        duration={5000}
+      />
       <Card className="w-full h-full py-5 shadow-md">
         <CardHeader className="flex items-center text-center">
           <div className="space-y-3 pb-5">
@@ -187,23 +199,18 @@ const LoginCard = () => {
                   )}
                 />
               </div>
-              <ErrorMessage
-                error={error}
-                onClose={() => setError(undefined)}
-                duration={30000}
-              />
-              <SuccessMessage
-                success={success}
-                onClose={() => setError(undefined)}
-                duration={30000}
-              />
+
               {/* Tombol Masuk */}
               <Button
                 disabled={isPending}
                 type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white h-10"
               >
-                <p className="text-base">Masuk</p>
+                {isPending ? (
+                  <p className="text-base">Memproses...</p>
+                ) : (
+                  <p className="text-base">Masuk</p>
+                )}
               </Button>
             </form>
           </Form>
@@ -215,34 +222,21 @@ const LoginCard = () => {
               <div className="border-t ml-[10px] flex-1" />
             </div>
             {/* tombol via sosmed */}
-            <div className="flex space-x-3 justify-center ">
+            <div className="flex flex-col space-y-3 justify-center ">
               {/* Google */}
               <Button
                 disabled={isPending}
                 onClick={signInWithGoogle}
                 variant={"outline"}
-                className="flex hover:bg-blue-100 text-xs -space-x-1"
+                className=""
               >
-                <FcGoogle size={100} />
-                <p className="hidden md:block ">Google</p>
-              </Button>
-              {/* Twitter */}
-              <Button
-                disabled={isPending}
-                variant={"outline"}
-                className=" hover:bg-blue-100 text-xs -space-x-1"
-              >
-                <FaXTwitter className="text-black-600" />
-                <p className="hidden md:block">Twitter/X</p>
+                <FcGoogle />
+                <p className="">Google</p>
               </Button>
               {/* Facebook */}
-              <Button
-                disabled={isPending}
-                variant={"outline"}
-                className=" hover:bg-blue-100 text-xs -space-x-1"
-              >
+              <Button disabled={isPending} variant={"outline"} className="">
                 <FaFacebookSquare className="text-blue-600" />
-                <p className="hidden md:block">Facebook</p>
+                <p className="">Facebook</p>
               </Button>
             </div>
             <div className="flex justify-center">
