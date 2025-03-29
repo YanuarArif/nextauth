@@ -1,12 +1,10 @@
 // this file for edge browser compatible
 import Google from "next-auth/providers/google";
-import Resend from "next-auth/providers/resend";
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { LoginSchema } from "@/schemas/zod";
 import { database } from "./database";
 import bcrypt from "bcryptjs";
-import ForwardEmail from "next-auth/providers/forwardemail";
 
 // Notice this is only an object, not a full Auth.js instance
 export default {
